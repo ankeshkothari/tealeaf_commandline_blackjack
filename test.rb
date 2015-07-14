@@ -96,14 +96,14 @@ def check_bust(points,player_name)
   end
 end
 
-def computer_hit_decide(p_bust,c_bust,p_points,c_points)
+def computer_hit_decide(p_bust,c_bust,p_points,c_points,c_points_ace)
   if p_bust == "yes"
     return "no"
   elsif c_bust == "yes"
     return "no"
-  elsif c_points > p_points
+  elsif c_points > p_points || (c_points_ace > p_points && c_points_ace < 22)
     return "no"
-  elsif c_points > 17
+  elsif c_points > 17 || c_points_ace > 17
     return "no"     
   end
 end
@@ -160,6 +160,12 @@ begin
   begin
     puts "Enter S to Stay or H to Hit a new card"
     player_command = gets.chomp.capitalize
+    if player_command == "S" && has_ace.include?(1)
+      if player_points < 12
+        player_points = player_points_ace.last.to_i
+        puts "#{player_name} has #{player_points} points"
+      end
+    end
     break if player_command == "S"
     
     # hit a new card for player
@@ -173,7 +179,13 @@ begin
   computer_hit = ""
   computer_bust = ""
   begin
-    computer_hit = computer_hit_decide(player_bust,computer_bust,player_points,computer_points)
+    computer_hit = computer_hit_decide(player_bust,computer_bust,player_points,computer_points,computer_points_ace.last.to_i)
+    if computer_hit == "no" && has_ace.include?(2)
+      if computer_points < 12
+        computer_points = computer_points_ace.last.to_i
+        puts "Computer has #{computer_points} points"
+      end
+    end
     break if computer_hit == "no"
 
     # hit a new card for computer
@@ -228,5 +240,3 @@ end while play_again == "P"
 puts " "
 puts "Thank you #{player_name} for playing. You are leaving the table with Rs #{total_amount}."
 puts " "
-
-binding.pry
