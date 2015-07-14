@@ -59,10 +59,15 @@ def check_bust(points,player_name)
   end
 end
 
-def computer_hit_decide(p_bust,c_bust)
+def computer_hit_decide(p_bust,c_bust,p_points,c_points)
   if p_bust == "yes"
     return "no"
-    binding.pry
+  elsif c_bust == "yes"
+    return "no"
+  elsif c_points > p_points
+    return "no"
+  elsif c_points > 17
+    return "no"     
   end
 end
 
@@ -118,14 +123,13 @@ begin
   player_bust = check_bust(player_points,player_name)
 end until player_command == "S" || player_bust == "yes"
 
-puts "after loop"
+puts " "
 
 # computer hits or stays or busts
 computer_hit = ""
 computer_bust = ""
 begin
-  computer_hit == computer_hit_decide(player_bust,computer_bust)
-  binding.pry
+  computer_hit = computer_hit_decide(player_bust,computer_bust,player_points,computer_points)
   break if computer_hit == "no"
 
   # hit a new card for computer
@@ -135,3 +139,19 @@ begin
   computer_bust = check_bust(computer_points,"Computer")  
 end until computer_hit == "no" || computer_bust == "yes"
 
+# Decide who wins and show message
+if player_bust == "yes"
+  puts "#{player_name} lost :("
+elsif computer_bust == "yes"
+  puts "#{player_name} won :)"
+elsif player_points == computer_points
+  puts "Its a tie!"
+elsif player_points > computer_points
+  puts "#{player_name} win :)"
+elsif computer_points > player_points
+  puts "#{player_name} lost :("
+end
+  
+    
+    
+    

@@ -154,22 +154,9 @@ begin
   player_bust = check_bust(player_points,player_name)
 end until player_command == "S" || player_bust == "yes"
 
-puts "ye"
 
-begin
-  computer_hit? = computer_hit_decide
-  break if computer_hit? == "no"
-end
 
-def computer_hit_decide
-  if 
-end
 
-# computer hits if
-# player is not bust
-# comp points under 17
-# computer not bust
-# player points not less than com points
 
 # number of aces count will be needed. Count 1 for each ace. Add 10 if points < 12 && at least one ace
 
