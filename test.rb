@@ -19,7 +19,7 @@ def create_deck
   deck
 end
 
-def hit(user,user_points,from_deck,from_cards_left)
+def hit(user,user_points,from_deck,from_cards_left,ace_check,player_points_with_ace,computer_points_with_ace)
   # get new card
   new_card = from_cards_left.sample
 
@@ -31,6 +31,12 @@ def hit(user,user_points,from_deck,from_cards_left)
   if new_card_number == 1
     new_points = 1
     card_number_describe = "Ace"
+    # Pushing 2 for computer or 1 for player to has_ace array
+    if user == "Computer"
+      ace_check.push(2)
+    else
+      ace_check.push(1)
+    end
   elsif new_card_number > 1 && new_card_number < 11
     new_points = new_card_number
     card_number_describe = new_card_number
@@ -51,8 +57,31 @@ def hit(user,user_points,from_deck,from_cards_left)
   # add new card points to existing user points
   user_points = user_points + new_points
 
+  # push points to ace
+  if user == "Computer"
+    if ace_check.include?(2)
+      computer_points_with_ace.push(user_points+10)
+    end
+  else
+    if ace_check.include?(1)
+      player_points_with_ace.push(user_points+10)
+    end
+  end
+
   # show player's points
   puts "#{user} has #{user_points} points"
+
+  # show points if ace
+  if user == "Computer"
+    if ace_check.include?(2) && computer_points_with_ace.last.to_i < 22
+      puts "or #{computer_points_with_ace.last.to_i} points because of ace"
+    end
+  else
+    if ace_check.include?(1) && player_points_with_ace.last.to_i < 22
+      puts "or #{player_points_with_ace.last.to_i} points because of ace"
+    end
+  end
+
   puts " "
 
   # return value and exit
@@ -108,15 +137,20 @@ begin
   player_points = 0
   computer_points = 0
 
+  # Push 1 for player, 2 for computer. Turn to 
+  has_ace = []
+  player_points_ace = []
+  computer_points_ace = []
+
   # start game
   # player's first hit
-  player_points = hit(player_name,player_points,deck,cards_left)
+  player_points = hit(player_name,player_points,deck,cards_left,has_ace,player_points_ace,computer_points_ace)
 
   # computers first hit
-  computer_points = hit("Computer",computer_points,deck,cards_left)
+  computer_points = hit("Computer",computer_points,deck,cards_left,has_ace,player_points_ace,computer_points_ace)
 
   # player's second hit
-  player_points = hit(player_name,player_points,deck,cards_left)
+  player_points = hit(player_name,player_points,deck,cards_left,has_ace,player_points_ace,computer_points_ace)
 
   puts "Computer's second card is hidden"
   puts " "
@@ -129,7 +163,7 @@ begin
     break if player_command == "S"
     
     # hit a new card for player
-    player_points = hit(player_name,player_points,deck,cards_left)
+    player_points = hit(player_name,player_points,deck,cards_left,has_ace,player_points_ace,computer_points_ace)
 
     # check if new card busted the player or not
     player_bust = check_bust(player_points,player_name)
@@ -143,7 +177,7 @@ begin
     break if computer_hit == "no"
 
     # hit a new card for computer
-    computer_points = hit("Computer",computer_points,deck,cards_left)
+    computer_points = hit("Computer",computer_points,deck,cards_left,has_ace,player_points_ace,computer_points_ace)
 
     # check if new card busted the computer or not
     computer_bust = check_bust(computer_points,"Computer")  
@@ -178,7 +212,7 @@ begin
     puts "#{player_name} earns Rs #{bet_amount}"
     total_amount = total_amount + bet_amount
   elsif player_game == "tie"
-    total_amount = total_amount + bet_amount
+    total_amount = total_amount
   elsif player_game == "blackjack"
     blackjack_amount = bet_amount*1.5
     puts "#{player_name} earns Rs #{blackjack_amount}"
@@ -194,3 +228,5 @@ end while play_again == "P"
 puts " "
 puts "Thank you #{player_name} for playing. You are leaving the table with Rs #{total_amount}."
 puts " "
+
+binding.pry
