@@ -26,19 +26,27 @@ def hit(user,user_points,from_deck,from_cards_left)
   # remove new card from cards left var outside method
   cards_left = from_cards_left.delete(new_card)
 
-  # show player which card he got
-  puts "#{user} got #{from_deck[new_card].values_at("number")[0].to_i} of #{from_deck[new_card].values_at("suite")[0].to_s}"
-
-  # count new card points
-  # Find if new card is ace, 2-9, j q k
+  # new_card_number to use for card number describing (J Q K) and also for counting new card points below
   new_card_number = from_deck[new_card].values_at("number")[0].to_i
   if new_card_number == 1
     new_points = 1
-  elsif new_card_number > 1 && new_card_number < 10
+    card_number_describe = "Ace"
+  elsif new_card_number > 1 && new_card_number < 11
     new_points = new_card_number
-  else
+    card_number_describe = new_card_number
+  elsif new_card_number == 11
     new_points = 10
+    card_number_describe = "Jack"
+  elsif new_card_number == 12
+    new_points = 10
+    card_number_describe = "Queen"
+  elsif new_card_number == 13
+    new_points = 10
+    card_number_describe = "King"
   end 
+
+  # show player which card he got
+  puts "#{user} got #{card_number_describe} of #{from_deck[new_card].values_at("suite")[0].to_s}"
 
   # add new card points to existing user points
   user_points = user_points + new_points
@@ -127,8 +135,6 @@ begin
     player_bust = check_bust(player_points,player_name)
   end until player_command == "S" || player_bust == "yes"
 
-  puts " "
-
   # computer hits or stays or busts
   computer_hit = ""
   computer_bust = ""
@@ -142,8 +148,6 @@ begin
     # check if new card busted the computer or not
     computer_bust = check_bust(computer_points,"Computer")  
   end until computer_hit == "no" || computer_bust == "yes"
-
-  puts " "
 
   # Decide who wins and show message
   if player_bust == "yes"
@@ -187,4 +191,6 @@ begin
 
 end while play_again == "P" 
 
+puts " "
 puts "Thank you #{player_name} for playing. You are leaving the table with Rs #{total_amount}."
+puts " "
